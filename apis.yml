@@ -1,39 +1,53 @@
 aid: gigacatalyst
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: contact-sales
+  onboarding: self-service
   trial: false
-  try_now: false
-  public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  try_now: true
+  public: true
+  label: Free to start, price not published
+  confidence: medium
+  source:
+  - https://v2.gigacatalyst.com/agent.md
+  - https://v2.gigacatalyst.com/signup
+  - https://gigacatalyst.com/pricing
+  generated: '2026-08-14'
+  method: searched
+  note: >-
+    A workspace can be created without contacting sales - the public, unauthenticated
+    registration endpoint creates one from an email address alone - but no price, tier, or
+    quota is published anywhere and /pricing returns 404. See
+    plans/gigacatalyst-plans-pricing.yml.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/gigacatalyst.png
 name: Gigacatalyst
 description: >-
-  Gigacatalyst is a Y Combinator-backed enterprise AI platform that turns customer
-  requirements into configured software demos, POCs, UAT environments, and
-  implementation workspaces by writing real configurations through a customer's
-  existing product APIs. It embeds an AI customization layer directly into SaaS
-  applications so that sales, solutions-engineering, and customer-success teams can
-  build the missing features and workflows they need using natural language, while
-  inheriting the host product's authentication and role-based access controls,
-  sandboxed execution, and AI model restrictions. Gigacatalyst is an API consumer:
-  it operates on top of other providers' APIs rather than publishing its own public
-  developer API, so this profile captures company identity and public web
-  properties rather than API artifacts.
+  Gigacatalyst (Giga Next Inc.) is a Y Combinator-backed enterprise AI platform that
+  embeds an API-connected app builder directly into B2B SaaS products, so that
+  customers, solutions engineers, and customer-success teams can describe a
+  dashboard, report, or workflow in natural language and have it generated against
+  the host product's own APIs, design language, permissions, and roles. Generated
+  apps run inside the customer's environment using the signed-in user's session
+  credentials, with granular write control and a choice of a Managed deployment
+  (routed through the Gigacatalyst proxy for caching, rate limiting, and analytics,
+  with AWS Bedrock zero-retention AI) or a Direct deployment where nothing routes
+  through Gigacatalyst and the customer brings their own AI key. Gigacatalyst is
+  primarily an API consumer rather than an API producer, but it does publish one
+  public, unauthenticated, agent-facing operation - the self-serve registration
+  endpoint documented at v2.gigacatalyst.com/agent.md - plus an official npm SDK and
+  CLI, an embeddable React chat component, and an open-source browser extension.
 url: https://raw.githubusercontent.com/api-evangelist/gigacatalyst/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - y-combinator
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: profiled
+x-tier-reason: >-
+  Promoted from stub on 2026-08-14. Contract discovery found one real, live, publicly
+  documented API operation plus an official npm SDK/CLI, an embeddable React component, a
+  published trust center, and a published vulnerability disclosure policy.
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-19'
+modified: '2026-08-14'
 tags:
 - Company
 - Artificial Intelligence
@@ -43,19 +57,132 @@ tags:
 - Customer Success
 - Automation
 - No-Code
-apis: []
+- Agents
+- Embedded Analytics
+- Low-Code
+- Developer Tools
+- Y Combinator
+apis:
+- name: Gigacatalyst Self-Serve Registration API
+  description: >-
+    The one public, unauthenticated operation Gigacatalyst publishes on its own
+    behalf. A coding agent reads the project's API surface, builds a JSON
+    description of it (organization, integrations, tools with inputSchema and
+    outputSchema, safety levels, optional domain documents) and POSTs it to
+    https://v2.gigacatalyst.com/api/self-serve/register, which creates the human's
+    workspace and returns a single-use sign-in URL, an account password, a tool
+    count, and a per-connection credential checklist. The request and response
+    contracts, the validation rules the endpoint enforces, and the auth vocabulary
+    are documented in full in the provider-published agent instructions at
+    https://v2.gigacatalyst.com/agent.md. Verified live: OPTIONS returns 204 with
+    "allow: OPTIONS, POST"; GET returns 405.
+  humanURL: https://v2.gigacatalyst.com/agent.md
+  baseURL: https://v2.gigacatalyst.com
+  tags:
+  - Agents
+  - Onboarding
+  - Registration
+  - Artificial Intelligence
+  properties:
+  - type: APIReference
+    url: https://v2.gigacatalyst.com/agent.md
+  - type: Documentation
+    url: https://gigacatalyst.com/self-serve-agent.md
+  - type: Authentication
+    url: authentication/gigacatalyst-authentication.yml
+  - type: Conventions
+    url: conventions/gigacatalyst-conventions.yml
+  - type: DataModel
+    url: data-model/gigacatalyst-data-model.yml
+  - type: ErrorCatalog
+    url: errors/gigacatalyst-problem-types.yml
 common:
+- type: TrustCenter
+  url: security/gigacatalyst-trust-center.yml
+- type: DomainSecurity
+  url: security/gigacatalyst-domain-security.yml
 - type: Website
   url: https://gigacatalyst.com
 - type: GitHubOrganization
   url: https://github.com/gigacatalyst
+- type: Documentation
+  url: https://gigacatalyst.com/self-serve-agent.md
+- type: APIReference
+  url: https://v2.gigacatalyst.com/agent.md
+- type: GettingStarted
+  url: https://gigacatalyst.com/self
+- type: Blog
+  url: https://gigacatalyst.com/blog
+- type: SignUp
+  url: https://v2.gigacatalyst.com/signup
+- type: Login
+  url: https://v2.gigacatalyst.com/login
+- type: TermsOfService
+  url: https://gigacatalyst.com/terms-of-service
+- type: PrivacyPolicy
+  url: https://gigacatalyst.com/privacy-policy
+- type: Security
+  url: https://gigacatalyst.com/trust/vulnerability-disclosure
+- type: VulnerabilityDisclosure
+  url: security/gigacatalyst-vulnerability-disclosure.yml
+- type: Packages
+  url: packages/gigacatalyst-packages.yml
+- type: SDKs
+  url: packages/gigacatalyst-packages.yml
+- type: CLI
+  url: cli/gigacatalyst-cli.yml
+- type: Components
+  url: components/gigacatalyst-components.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/gigacatalyst-llms.txt
+- type: Conventions
+  url: conventions/gigacatalyst-conventions.yml
+- type: DataModel
+  url: data-model/gigacatalyst-data-model.yml
+- type: ErrorCatalog
+  url: errors/gigacatalyst-problem-types.yml
+- type: Authentication
+  url: authentication/gigacatalyst-authentication.yml
+- type: Conformance
+  url: conformance/gigacatalyst-conformance.yml
+- type: Lifecycle
+  url: lifecycle/gigacatalyst-lifecycle.yml
+- type: Plans
+  url: plans/gigacatalyst-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/gigacatalyst-rate-limits.yml
 maintainers:
+# NOTE ON POINTERS DELIBERATELY NOT EMITTED (2026-08-14 enrichment pass).
+# Each of these was probed and genuinely misses; the artifact recording the absence is on
+# disk, but no pointer is written because a pointer asserts the PROVIDER serves the surface.
+#   WellKnown / SecurityTxt - every /.well-known/ path 404s on the apex and returns an SPA
+#     HTML shell on v2/app. See well-known/gigacatalyst-well-known.yml.
+#   AgentCard - no card at /.well-known/agent-card.json or /.well-known/agent.json on any
+#     host. Nothing written to a2a/ at all, per the search-only rule.
+#   MCPServer - no server exists; mcp/gigacatalyst-mcp.yml is a derived candidate with
+#     deployment.mode: none. The /mcp 200s are SPA shells.
+#   Idempotency - no idempotency key is documented. Server-side dedupe on email is not a
+#     client-supplied idempotency contract.
+#   Compliance - the trust center says SOC 2 is being "actively pursued", not held.
+#   StatusPage / Deprecation - neither exists; status.gigacatalyst.com does not resolve.
+#   ChangeLog / Pricing / Sandbox / AsyncAPI / Webhooks / OpenAPI / OAuthScopes - not published.
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 x-enrichment:
-  date: '2026-07-19'
-  status: backfilled
+  date: '2026-08-14'
+  status: enriched
+  artifacts_added: 20
   pass: local-v1
-  note: backfilled from .gitignore signal + verified work evidence
+  note: >-
+    Contract discovery overturned the prior "API consumer, no public API" conclusion.
+    Gigacatalyst publishes one real, live, unauthenticated API operation - POST
+    https://v2.gigacatalyst.com/api/self-serve/register - documented only inside
+    provider-published agent instructions at https://v2.gigacatalyst.com/agent.md, which are
+    saved verbatim as agent skills. Also found: official npm SDK + CLI (gigacatalyst 0.2.2,
+    2026-07-07), an Apache-2.0 browser extension, a trust center, and a vulnerability
+    disclosure policy at a non-standard path. Corrected a false SOC 2 certification credit
+    written by the mechanical trust-center probe.
