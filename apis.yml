@@ -45,7 +45,7 @@ x-tier-reason: >-
   Promoted from stub on 2026-08-14. Contract discovery found one real, live, publicly
   documented API operation plus an official npm SDK/CLI, an embeddable React component, a
   published trust center, and a published vulnerability disclosure policy.
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-07-17'
 modified: '2026-08-14'
 tags:
