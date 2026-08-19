@@ -42,6 +42,21 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Gigacatalyst is a company surfaced as a portfolio company of y-combinator and added to the API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+Gigacatalyst (Giga Next Inc.) is a Y Combinator-backed platform that embeds an API-connected
+app builder into B2B SaaS products. Customers describe a dashboard, report, or workflow in
+natural language and it is generated against the host product's own APIs, design language,
+roles, and permissions, running inside the customer's own environment.
+
+Gigacatalyst is primarily an API *consumer*, but the 2026-08-14 enrichment pass found that it
+does publish one public API operation of its own — an unauthenticated `POST` to
+`https://v2.gigacatalyst.com/api/self-serve/register`, documented only inside the agent
+instructions the company serves at `https://v2.gigacatalyst.com/agent.md`. Those instructions
+are written for a coding agent rather than a person, and are captured verbatim under
+`skills/`. Also profiled: the official npm SDK and CLI, an embeddable React chat component, an
+Apache-2.0 browser extension, a trust center, and a vulnerability disclosure policy.
+
+No OpenAPI, AsyncAPI, GraphQL, MCP server, A2A agent card, `/.well-known/` document, pricing
+page, status page, or changelog is published. Those absences are recorded in the artifacts
+rather than left implied.
 
 Backed by: y-combinator

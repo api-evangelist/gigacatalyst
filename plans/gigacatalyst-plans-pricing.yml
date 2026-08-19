@@ -1,0 +1,43 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://gigacatalyst.com/pricing (404), https://gigacatalyst.com/sitemap.xml (200, 108
+  URLs, no pricing page), and every product page on gigacatalyst.com, probed 2026-08-14
+plan_count: 0
+currency: null
+plans: []
+note: >-
+  Gigacatalyst publishes NO pricing. /pricing returns 404, the sitemap contains no pricing
+  URL, and no product page names a price, a tier, a quota, or a free allowance. Every
+  conversion path on the site is a sales motion: "Get a Demo", "Talk to Founder", and a
+  25-minute Cal.com booking link (https://cal.com/namanyayg/25m). This is an enterprise
+  contact-us model, recorded as plan_count: 0 rather than omitted.
+access_model:
+  label: contact-sales
+  self_serve_signup: true
+  self_serve_detail: >-
+    An account CAN be created without talking to sales - the public self-serve registration
+    endpoint at https://v2.gigacatalyst.com/api/self-serve/register creates a workspace from
+    an email address alone, and https://v2.gigacatalyst.com/signup is reachable. What is not
+    published is what that account costs, what it includes, or what happens when a limit is
+    reached. Free-to-start, price-unknown.
+  free_trial_claimed: >-
+    The /multiplier product page states "No card required" for the buyer-discovery flow. No
+    trial length, no post-trial price, and no plan it converts into are published.
+  contact_paths:
+  - {label: Get a Demo, url: 'https://gigacatalyst.com/#contact'}
+  - {label: Talk to Founder, url: 'https://cal.com/namanyayg/25m'}
+  - {label: Schedule a Review (security team), url: 'https://gigacatalyst.com/trust'}
+  - {label: Request DPA, email: security@gigacatalyst.com}
+cost_tooling_published:
+  note: >-
+    Gigacatalyst publishes cost calculators about the BUYER's build-vs-buy decision, not
+    about its own price. They are marketing tools and are not a pricing disclosure.
+  tools:
+  - {name: Custom App Development Cost Calculator, url: 'https://gigacatalyst.com/tools/custom-app-cost-calculator'}
+  - {name: Build vs Extend vs Replace Calculator, url: 'https://gigacatalyst.com/tools/build-vs-extend-calculator'}
+  - {name: SaaS Customization Readiness Score, url: 'https://gigacatalyst.com/tools/saas-customization-readiness'}
+evidence:
+- {url: 'https://gigacatalyst.com/pricing', status: 404}
+- {url: 'https://gigacatalyst.com/sitemap.xml', status: 200}
+- {url: 'https://v2.gigacatalyst.com/signup', status: 200}

@@ -1,0 +1,44 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://www.npmjs.com/package/gigacatalyst (README of the published 0.2.2 tarball) and
+  the package.json `bin` field
+name: gigacatalyst
+official: true
+package: packages/gigacatalyst-packages.yml
+version: 0.2.2
+published: '2026-07-07'
+note: >-
+  A real first-party CLI, but a thin one - the published README documents a single command.
+  It is a scaffolder, not an API client: it scans a Next.js project's app/api/ routes, writes
+  a tools manifest into .gigacatalyst/, and wires up the chat handler and provider component.
+  No further subcommands, flags, or configuration options are documented anywhere public.
+install:
+- method: npx
+  command: npx gigacatalyst init
+  note: the documented entry point - no global install step is published
+- method: npm
+  command: npm install gigacatalyst
+  note: installs the SDK; the `gigacatalyst` binary comes with it (bin -> dist/cli.mjs)
+commands:
+- command: gigacatalyst init
+  group: setup
+  description: >-
+    Scans the project's app/api/ routes, generates a tools manifest, and sets up the chat
+    handler and the provider component.
+  produces:
+  - .gigacatalyst/ config directory
+  - a chat handler route
+  - a root provider component (documented in the README as ./giga-root)
+generated_endpoints:
+  note: >-
+    Routes the CLI scaffolds INTO THE CUSTOMER'S OWN APPLICATION. These are not Gigacatalyst
+    hosts and are not callable against gigacatalyst.com - they are templated paths in the
+    consuming Next.js app.
+  paths:
+  - /api/gigacatalyst/chat
+  - /api/gigacatalyst/capabilities
+gaps:
+- No `--help` output, man page, or command reference is published.
+- No documented subcommands beyond `init`.
+- No CLI changelog or release notes.

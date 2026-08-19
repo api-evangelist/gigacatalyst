@@ -1,0 +1,86 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://registry.npmjs.org/gigacatalyst (registry metadata endpoint) and
+  https://api.github.com/orgs/gigacatalyst/repos
+note: >-
+  Searched npm, PyPI, RubyGems, crates.io, NuGet, Maven Central, Packagist and pkg.go.dev.
+  Exactly one first-party published package exists: the npm `gigacatalyst` SDK, which also
+  ships the CLI binary. PyPI returned 404 for `gigacatalyst`; no packages were found on any
+  other registry. The browser extension is distributed from GitHub Releases and the Chrome
+  Web Store, not from a package registry, so it carries no registry metadata endpoint.
+packages:
+- language: javascript
+  registry: npm
+  name: gigacatalyst
+  url: https://www.npmjs.com/package/gigacatalyst
+  install: npm install gigacatalyst
+  version: 0.2.2
+  published: '2026-07-07'
+  official: true
+  official_evidence: >-
+    Package name is the company's exact brand; the README titles it "GigaCatalyst SDK" and
+    describes the shipping product verbatim ("Embeddable AI chat assistant SDK for Next.js
+    apps. Auto-discovers your API routes and generates dashboards on the fly"); it exposes
+    the `gigacatalyst` binary and the `gigacatalyst/server` + `gigacatalyst/react` subpath
+    exports the product docs reference. Published by npm user `abhishaex`; the package
+    declares no `repository` or `homepage` field, so first-party status rests on the name,
+    the README, and the product match rather than on a declared link.
+  description: >-
+    Embeddable AI chat assistant SDK that auto-discovers API routes and generates dashboards.
+  keywords: [ai, chat, sdk, dashboard, nextjs, gemini]
+  bin:
+    gigacatalyst: dist/cli.mjs
+  exports:
+  - gigacatalyst/server
+  - gigacatalyst/react
+  dependencies: [ai, '@ai-sdk/google', zod, glob]
+  currency_note: >-
+    Latest release 0.2.2 on 2026-07-07, roughly five weeks before this pass. Still pre-1.0
+    and the only registry artifact the company ships.
+- language: javascript
+  registry: github-releases
+  name: gigacatalyst-go
+  url: https://github.com/gigacatalyst/gigacatalyst-go
+  install: >-
+    Download chrome-extension.zip from
+    https://github.com/gigacatalyst/gigacatalyst-go/releases/latest and load it unpacked
+    via chrome://extensions (Developer mode)
+  version: 1.0.0
+  published: '2026-05-11'
+  published_source: >-
+    Repository `pushed_at` 2026-05-11T19:04:15Z; version read from package.json (`"version":
+    "1.0.0"`). GitHub Releases is not a package registry and exposes no version metadata
+    endpoint of the kind npm/PyPI/crates.io provide.
+  official: true
+  official_evidence: >-
+    Hosted in the company's own GitHub organization (github.com/gigacatalyst); package.json
+    declares author {name: "Gigacatalyst", url: "https://gigacatalyst.com"}; repository
+    homepage is https://gigacatalyst.com/.
+  license: Apache-2.0
+  description: >-
+    Gigacatalyst browser extension (internal package name `gigacatalyst-studio`) - modifies
+    any webpage with natural language, captures APIs from network traffic, injects CSS/JS,
+    and persists changes per domain.
+  distribution:
+  - GitHub Releases (chrome-extension.zip, unpacked install)
+  - Chrome Web Store (build and listing assets present under docs/chrome-webstore and
+    store-assets in the repo)
+  browsers: [chrome, firefox, edge]
+registries_checked:
+- registry: npm
+  result: 1 package found (gigacatalyst)
+- registry: pypi
+  result: 404 for gigacatalyst - no package
+- registry: rubygems
+  result: none
+- registry: crates.io
+  result: none
+- registry: nuget
+  result: none
+- registry: maven-central
+  result: none
+- registry: packagist
+  result: none
+- registry: pkg.go.dev
+  result: none

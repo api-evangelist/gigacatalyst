@@ -1,0 +1,108 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://v2.gigacatalyst.com/agent.md, https://gigacatalyst.com/trust,
+  https://gigacatalyst.com/trust/vulnerability-disclosure, plus live probes on 2026-08-14
+note: >-
+  No `Compliance` pointer is emitted in apis.yml. Gigacatalyst holds no published
+  certification - its trust center states it is "actively pursuing SOC 2" - and the
+  `compliance_published` check must not be awarded for an intention. TrustCenter is emitted
+  because a real trust center exists.
+standards:
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document is served on any host. Probed /openapi.json,
+    /openapi.yaml, /swagger.json, /api-docs and /docs on gigacatalyst.com (404 on all) and on
+    v2/app.gigacatalyst.com (200 HTML SPA shells, not specs).
+- id: asyncapi
+  conforms: false
+  evidence: No event, streaming, or webhook surface is published.
+- id: graphql
+  conforms: false
+  evidence: /graphql returned only the SPA HTML shell; no introspection endpoint exists.
+- id: mcp
+  conforms: false
+  evidence: >-
+    No MCP server is published. /mcp and /api/mcp on app.gigacatalyst.com return the SPA HTML
+    shell. Notably, the registration API's request body IS an MCP-shaped tool manifest
+    (name/description/inputSchema/outputSchema per tool) - the platform speaks the shape
+    without exposing a server.
+- id: a2a
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on gigacatalyst.com
+    and SPA HTML shells on v2/app. No agent card exists.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No oauth2 flow, no /.well-known/oauth-authorization-server, no
+    /.well-known/oauth-protected-resource. The public operation is unauthenticated.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on the apex.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: No problem+json usage found or claimed; no error reference is published at all.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: >-
+    /.well-known/security.txt returns 404. A real vulnerability disclosure policy IS
+    published, but at /trust/vulnerability-disclosure rather than at the RFC 9116 location -
+    so the policy exists and the machine-discoverable pointer to it does not.
+- id: coordinated-vulnerability-disclosure
+  conforms: true
+  evidence: >-
+    Published policy at https://gigacatalyst.com/trust/vulnerability-disclosure (effective
+    2026-05-01) with a named contact, defined in/out scope, 2-day acknowledgement and 5-day
+    assessment targets, safe-harbour terms, and researcher credit. No paid bounty.
+- id: llms-txt
+  conforms: false
+  evidence: >-
+    /llms.txt returns 404 on the apex and the SPA shell on v2. Gigacatalyst does publish
+    agent-facing markdown (self-serve-agent.md, agent.md) but not at the llms.txt convention.
+- id: json-schema
+  conforms: partial
+  evidence: >-
+    The registration payload requires per-tool `inputSchema` and `outputSchema` written as
+    JSON Schema objects, and the published example uses standard JSON Schema keywords (type,
+    properties, items, description). No `$schema` declaration or dialect version is stated,
+    and Gigacatalyst publishes no schema for its own request body.
+- id: https-only
+  conforms: true
+  evidence: >-
+    TLSv1.3 on gigacatalyst.com and v2.gigacatalyst.com; registration `baseUrl` values are
+    required to be HTTPS by the endpoint's own validation rules.
+- id: hsts
+  conforms: partial
+  evidence: >-
+    v2.gigacatalyst.com sends Strict-Transport-Security max-age=63072000; the apex
+    gigacatalyst.com sends no HSTS header. See security/gigacatalyst-domain-security.yml.
+- id: dnssec
+  conforms: false
+  evidence: No DNSKEY on gigacatalyst.com.
+- id: caa
+  conforms: false
+  evidence: No CAA records on gigacatalyst.com.
+- id: spf
+  conforms: true
+  evidence: '"v=spf1 include:_spf.google.com ~all" on gigacatalyst.com.'
+- id: dmarc
+  conforms: false
+  evidence: No _dmarc.gigacatalyst.com TXT record.
+- id: soc2
+  conforms: false
+  evidence: >-
+    Trust center FAQ: "We are actively pursuing SOC 2 certification." Pursuit, not
+    attestation. See security/gigacatalyst-trust-center.yml.
+- id: gdpr-dpa
+  conforms: partial
+  evidence: >-
+    A DPA is offered on request via security@gigacatalyst.com, and sub-processors are
+    enumerated with purpose and location on the trust center. No GDPR compliance claim or
+    certification is made.
+- id: hipaa
+  conforms: false
+  evidence: >-
+    Not claimed for Gigacatalyst itself. A blog post discusses HIPAA-compliant AI agents as a
+    topic; marketing content is not a compliance claim and is not recorded as one.

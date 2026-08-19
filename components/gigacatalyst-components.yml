@@ -1,0 +1,70 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  README of the published npm `gigacatalyst` 0.2.2 tarball, plus
+  https://gigacatalyst.com/self and https://gigacatalyst.com/for-product-teams
+note: >-
+  Gigacatalyst's whole product is an embedded client-side surface, so this artifact is the
+  centre of its developer story rather than a side offering. Only components the provider
+  actually names in published material are listed; the deeper widget set (charts, tables,
+  stat cards) is described in prose as generated output rather than as an exported API, and
+  is recorded that way.
+families:
+- family: chat-assistant
+  loader: gigacatalyst/react
+  registry_package: gigacatalyst
+  description: >-
+    Embeddable AI chat assistant mounted into a Next.js app. Renders a floating chat button
+    and side panel, opened with Ctrl+K (Cmd+K on macOS). Streams responses, calls the host
+    app's own APIs on the user's behalf, and renders generated dashboards inline in the chat.
+  components:
+  - name: GigaCatalystProvider
+    kind: react-provider
+    import: './giga-root'
+    usage: wraps the app in the root layout (app/layout.tsx)
+    source: npm README
+  - name: GigaRoot
+    kind: react-component
+    import: 'gigacatalyst/react'
+    usage: floating chat button and panel
+    source: npm README
+  server_counterpart:
+    name: createGigaHandler
+    import: 'gigacatalyst/server'
+    kind: route-handler-factory
+    handles:
+    - /api/gigacatalyst/chat
+    - /api/gigacatalyst/capabilities
+  framework: next.js
+  rendering: client
+- family: generated-app-surfaces
+  loader: null
+  description: >-
+    Output the builder generates inside the host product rather than exported components a
+    developer imports. Named in the company's own marketing and trust pages: dashboards,
+    charts, tables, stat cards, report builders, and workflow apps, rendered in the host
+    product's design language and under the host product's roles and permissions.
+  components: []
+  properties_published:
+  - renders inside the customer's environment, not on Gigacatalyst infrastructure
+  - inherits the signed-in user's session credentials and permissions
+  - generated source code is available to the customer's team for review or audit
+  - network requests are visible in browser dev tools
+  white_label: >-
+    "Embed and white-label it" is offered on https://gigacatalyst.com/self; no configuration
+    reference for theming is published.
+- family: browser-extension
+  loader: null
+  description: >-
+    Gigacatalyst browser extension (repo gigacatalyst/gigacatalyst-go, internal package name
+    gigacatalyst-studio, Apache-2.0). Injects a side-panel chat UI into any page, captures
+    the page's network APIs, applies natural-language CSS/JS modifications, and persists them
+    per domain. Uses Shadow DOM isolation so injected UI does not collide with host styles.
+  components: []
+  browsers: [chrome, firefox, edge]
+  distribution: GitHub Releases (chrome-extension.zip) and Chrome Web Store
+  repo: https://github.com/gigacatalyst/gigacatalyst-go
+gaps:
+- No component API reference, props table, or theming/configuration documentation is published.
+- No hosted component playground or storybook.
+- No CDN/script-tag distribution; the React components ship only via the npm package.

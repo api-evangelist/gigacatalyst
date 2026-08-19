@@ -1,0 +1,79 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://v2.gigacatalyst.com/agent.md (provider-published API reference) and
+  https://gigacatalyst.com/trust
+docs: https://v2.gigacatalyst.com/agent.md
+note: >-
+  derive-authentication.py was not run because there is no OpenAPI in this repo to derive
+  from - Gigacatalyst publishes no machine-readable spec. This profile is read from the
+  provider's own published agent instructions and trust center, which document the auth
+  model in prose. Two distinct auth surfaces exist and are easy to conflate; they are
+  separated below.
+summary:
+  types: [none, session]
+  api_key_in: []
+  oauth2_flows: []
+  headline: >-
+    Gigacatalyst's own public API operation is UNAUTHENTICATED by design. The provider says
+    so explicitly and explains the consequence: "this endpoint is public, and handing back a
+    password for an existing address would let anyone who knows it take that account over."
+schemes:
+- name: none
+  type: none
+  applies_to: POST https://v2.gigacatalyst.com/api/self-serve/register
+  description: >-
+    The self-serve registration endpoint accepts an anonymous POST. No API key, bearer token,
+    OAuth flow, or signature is required or documented. Verified live on 2026-08-14: OPTIONS
+    returns 204 with `allow: OPTIONS, POST`; GET returns 405.
+  sources: [https://v2.gigacatalyst.com/agent.md]
+  abuse_controls_documented:
+  - >-
+    Returning `password` is suppressed when the submitted email already has an account
+    (`isNewWorkspace: false`), specifically to prevent account takeover by anyone who knows
+    the address.
+  - Request payload capped at 500 KB.
+  - Rejection rules on provider/operation/path/baseUrl shape (see conventions/).
+- name: session
+  type: session
+  applies_to: https://v2.gigacatalyst.com (workspace UI)
+  description: >-
+    The workspace itself is email + password. Registration returns a single-use, short-lived
+    `signInUrl` plus a permanent generated password so the human can sign in normally after
+    the link expires. Sign-in at https://v2.gigacatalyst.com/login asks for email and
+    password.
+  credential_handling_published: >-
+    Both signInUrl and password are declared secrets by the provider: print once to the
+    human, never write to a file, commit message, .env, note, or the agent's transcript;
+    tell the human to store the password in a password manager and change it after sign-in.
+  sources: [https://v2.gigacatalyst.com/agent.md]
+downstream_credential_model:
+  note: >-
+    SEPARATE SURFACE - do not read these as Gigacatalyst's own auth. This is the vocabulary
+    Gigacatalyst uses to describe how the CUSTOMER's API is authenticated when it is
+    registered as an integration. It is a real published enum and useful signal about what
+    the platform can connect to, but it authenticates the customer's API, not Gigacatalyst's.
+  field: integrations[].authentication
+  default: bearer
+  values:
+  - value: none
+    note: >-
+      "A connection declared `none` is switched on at signup: their apps read real data from
+      the first minute, with no credential step and no sample data."
+  - value: bearer
+  - value: token
+  - value: api_key_header
+    note: paired with `headerName` when the API expects a named header
+  - value: basic
+    note: credential form asks for two fields
+  - value: login_session
+    note: credential form asks for two fields
+  credential_documentation_requirement: >-
+    The agent is required to attach one `documents[]` entry of kind `authentication` per
+    integration that needs a credential, recording the scheme, the header, the NAME of the
+    environment variable the project reads it from, and where a new key is issued - never the
+    value, and never by opening the file that holds it.
+  runtime_model: >-
+    Per the trust center, generated apps run in the customer's environment "using the same
+    credentials and permissions as your logged-in user" - Gigacatalyst does not hold a
+    separate admin connection to the customer's database or APIs.

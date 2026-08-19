@@ -1,0 +1,54 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  https://gigacatalyst.com/trust (prose mention only) and live response headers from
+  https://v2.gigacatalyst.com/api/self-serve/register, observed 2026-08-14
+limit_count: 0
+limits: []
+note: >-
+  Gigacatalyst publishes no rate limits and returns no rate-limit headers. An agent calling
+  the one public operation has no runtime signal at all - no budget to read before the call
+  and no header to read after it. Recorded as limit_count: 0, which is data, not a gap in
+  this pass.
+response_headers:
+  observed: []
+  checked:
+  - X-RateLimit-Limit
+  - X-RateLimit-Remaining
+  - X-RateLimit-Reset
+  - RateLimit-Limit
+  - RateLimit-Remaining
+  - RateLimit-Reset
+  - RateLimit-Policy
+  - Retry-After
+  detail: >-
+    None present. The OPTIONS response to /api/self-serve/register carried only platform and
+    security headers - server, strict-transport-security, x-content-type-options,
+    referrer-policy, cross-origin-opener-policy, permissions-policy, cache-control,
+    x-matched-path, x-vercel-cache, x-vercel-id.
+exhaustion_status: null
+exhaustion_detail: >-
+  Undocumented. Not probed - establishing it would require deliberately flooding a public
+  endpoint that creates real accounts, which is out of scope for a read-only public probe.
+documented_controls:
+- control: request payload size
+  limit: 500 KB
+  scope: per-request
+  source: https://v2.gigacatalyst.com/agent.md
+  note: >-
+    The only published numeric constraint on the API. It is a payload ceiling, not a rate
+    limit, and is recorded here because it is the sole quantitative guardrail an integrator
+    can plan against.
+- control: proxy-side rate limiting (Managed mode)
+  limit: null
+  scope: customer API traffic
+  source: https://gigacatalyst.com/trust
+  note: >-
+    The trust center states that in the default Managed mode "requests route through
+    Gigacatalyst proxy for caching, rate limiting, and analytics." This describes rate
+    limiting applied to the CUSTOMER's own API traffic passing through the proxy, and no
+    numbers, windows, or headers are published for it. It is not a limit on the Gigacatalyst
+    API and must not be counted as one.
+evidence:
+- {url: 'https://v2.gigacatalyst.com/api/self-serve/register', status: 204, method: OPTIONS, note: 'no rate-limit headers present'}
+- {url: 'https://gigacatalyst.com/trust', status: 200, note: 'rate limiting named as a Managed-mode proxy feature, no values'}

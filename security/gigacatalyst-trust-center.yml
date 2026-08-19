@@ -1,0 +1,84 @@
+generated: '2026-08-14'
+method: searched
+probe: true
+source: https://gigacatalyst.com/trust
+url: https://gigacatalyst.com/trust
+# CORRECTION 2026-08-14: the mechanical probe extracted "SOC 2" from the page body
+# and recorded it as a held certification. It is not one. The trust center's own FAQ
+# reads: "Do you have SOC 2? We are actively pursuing SOC 2 certification." Recording
+# it under certifications[] would credit Gigacatalyst with an attestation it does not
+# hold, so certifications[] is empty and the claim is carried under certifications_pursued[].
+certifications: []
+certifications_pursued:
+- name: SOC 2
+  status: pursuing
+  evidence: >-
+    https://gigacatalyst.com/trust FAQ - "Do you have SOC 2? We are actively pursuing
+    SOC 2 certification. Our architecture is designed so that your customer data never
+    enters our systems, limiting exposure far beyond what a certification alone provides."
+posture:
+  summary: >-
+    Gigacatalyst publishes a real trust center rather than a certification badge wall.
+    Its argument is architectural: generated apps run inside the customer's environment
+    under the signed-in user's own session credentials, so customer data is claimed never
+    to enter Gigacatalyst systems.
+  data_retention:
+    ai_providers: zero-retention
+    byok: true
+    stored:
+    - generated app source code
+    - app metadata (who created it, when)
+    - usage logs (optional, can be disabled)
+    never_stored:
+    - customer data or API responses
+    - query results or database contents
+    - end-user PII from the host platform
+    - AI prompts or responses
+  deployment_modes:
+  - mode: managed
+    default: true
+    description: >-
+      Requests route through the Gigacatalyst proxy for caching, rate limiting, and
+      analytics; AI powered by AWS Bedrock in the Gigacatalyst account (zero data
+      retention); basic telemetry via PostHog.
+  - mode: direct
+    default: false
+    description: >-
+      API calls go straight to the customer's infrastructure with nothing routed through
+      Gigacatalyst; bring-your-own AI key (Vertex, Azure, AWS, or any provider); all
+      telemetry disabled.
+  write_access: >-
+    Granular and customer-selected - no writes, writes via the customer's existing API
+    endpoints, or new write operations through a Gigacatalyst intermediary. Destructive
+    endpoints can be disabled entirely.
+  breach_notification: within 24 hours of discovery, in writing
+  dpa: available on request via legal contact on the trust center
+sub_processors:
+- name: Supabase
+  purpose: App metadata storage
+  location: United States
+- name: Vercel
+  purpose: Hosting & deployment
+  location: United States
+- name: AWS Bedrock
+  purpose: AI code generation (default provider)
+  location: United States
+- name: PostHog
+  purpose: Product analytics (can be disabled)
+  location: United States
+documents:
+- title: Vulnerability Disclosure Policy
+  url: https://gigacatalyst.com/trust/vulnerability-disclosure
+- title: Privacy Policy
+  url: https://gigacatalyst.com/privacy-policy
+- title: Terms of Service
+  url: https://gigacatalyst.com/terms-of-service
+evidence:
+- source: https://gigacatalyst.com/trust
+  http_status: 200
+  fetched: '2026-08-14'
+  keywords:
+  - soc 2
+  - trust center
+  - sub-processors
+  - breach notification

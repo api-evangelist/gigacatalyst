@@ -1,0 +1,63 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Site-wide search of gigacatalyst.com (sitemap.xml, 108 URLs), v2.gigacatalyst.com and
+  app.gigacatalyst.com on 2026-08-14
+note: >-
+  Mostly a record of absence, which is the honest result. Gigacatalyst publishes no
+  versioning policy, no deprecation policy, no SLA and no status page. NO `StatusPage` and NO
+  `Deprecation` pointers are emitted in apis.yml, because neither exists.
+versioning:
+  scheme: host
+  current: v2
+  docs: null
+  detail: >-
+    Versioning is expressed only as a hostname. The current product runs on
+    v2.gigacatalyst.com; the earlier app.gigacatalyst.com host still resolves and redirects to
+    /try. No version header, no version path segment, no published policy on how versions are
+    introduced or retired.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  detail: >-
+    No deprecation policy page and no evidence of RFC 8594 Sunset/Deprecation headers. The
+    coexistence of the app. and v2. hosts implies a migration happened, but nothing documents
+    it or states when the older host stops answering.
+sla:
+  url: null
+  uptime_target: null
+  detail: >-
+    No SLA is published. The trust center commits to one measurable operational target -
+    breach notification within 24 hours of discovery - and the vulnerability disclosure policy
+    commits to 2-day acknowledgement and 5-day initial assessment. These are security
+    response targets, not availability commitments.
+status_page: null
+status_page_detail: >-
+  status.gigacatalyst.com does not resolve (000) and /status returns 404 on the apex. No
+  third-party status page (Statuspage, Instatus, Better Stack) was found.
+changelog: null
+changelog_detail: >-
+  /changelog returns 404. No release notes page. The npm package publishes versions (0.2.2 on
+  2026-07-07) but ships no CHANGELOG in its tarball, so there is no dated change record to
+  capture.
+deprecated_operations: []
+company:
+  legal_entity: Giga Next Inc.
+  founded_signal: >-
+    GitHub organization gigacatalyst created with id 207626780; earliest public repo activity
+    2026-01-23 (giga-ai-creator-release).
+  backing: Y Combinator
+  contact_domains:
+  - gigacatalyst.com
+  - gigamind.dev
+  contact_domain_note: >-
+    Worth flagging for anyone tracking this company: the general contact address published in
+    the site footer and on the trust and disclosure pages is support@gigamind.dev, on a
+    different registrable domain from the product. Security contact is
+    security@gigacatalyst.com. Both addresses are obfuscated in the HTML via Cloudflare email
+    protection and were decoded from the published cfemail payloads.
+evidence:
+- {url: 'https://status.gigacatalyst.com', status: 0, note: does not resolve}
+- {url: 'https://gigacatalyst.com/status', status: 404}
+- {url: 'https://gigacatalyst.com/changelog', status: 404}
+- {url: 'https://gigacatalyst.com/sitemap.xml', status: 200, note: '108 URLs, no docs/status/changelog section'}

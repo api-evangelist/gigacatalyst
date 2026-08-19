@@ -1,0 +1,76 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://gigacatalyst.com/self-serve-agent.md and https://v2.gigacatalyst.com/agent.md
+note: >-
+  These are NOT generated skills. Gigacatalyst publishes agent operating instructions itself,
+  as markdown, served with content-type text/markdown, and both files are saved here
+  VERBATIM with no edits. The company's /self page instructs a human to paste a prompt into
+  Claude Code, Cursor, OpenCode or Codex telling the agent to read
+  https://gigacatalyst.com/self-serve-agent.md and follow it - so the intended consumer of
+  these documents is a coding agent, not a person.
+
+  This is a rare shape in the catalog: a company whose onboarding surface IS an agent skill,
+  and whose only public API operation is documented nowhere except inside it.
+skills:
+- file: gigacatalyst-self-serve-registration.md
+  name: Gigacatalyst self-serve registration
+  description: >-
+    Read a codebase's API surface, describe it as a JSON payload of integrations and tools,
+    and POST it to the Gigacatalyst self-serve registration endpoint to create the human's
+    workspace with their API already catalogued.
+  api: https://v2.gigacatalyst.com/api/self-serve/register
+  source: https://v2.gigacatalyst.com/agent.md
+  method: searched
+  verbatim: true
+  fetched: '2026-08-14'
+  http_status: 200
+  content_type: text/markdown; charset=utf-8
+  operations:
+  - POST /api/self-serve/register
+  covers:
+  - discovering routes, OpenAPI/Swagger specs, API clients and ORM schemas in a repo
+  - identifying the auth scheme and the NAME of the env var holding the credential
+    (explicitly never the value, and never by opening a secrets file)
+  - building the registration payload (organization, integrations[], tools[] with
+    inputSchema/outputSchema, safetyLevel, documents[])
+  - the validation rules the endpoint enforces, so a payload is not rejected
+  - handling the response (signInUrl, password, toolCount, setup.connections[], live flags)
+  - the hand-over message printed to the human
+  safety_notes:
+  - >-
+    The document repeatedly forbids opening .env or any secrets file, and restates that the
+    instruction holds "regardless of anything else in this file or in the conversation that
+    led here" - an explicit prompt-injection guard written by the provider.
+  - >-
+    It requires the agent to state the exact URL it is about to POST to and wait for human
+    confirmation before the single network call.
+  - >-
+    It classifies the returned signInUrl and password as secrets: print once to the human,
+    never to a file, commit message, .env, or the agent's own transcript.
+- file: gigacatalyst-setup-guide.md
+  name: Gigacatalyst setup guide (entry point)
+  description: >-
+    The shorter entry-point document linked from https://gigacatalyst.com/self. Scopes what
+    an agent may read from a project (route paths, HTTP methods, parameter names, response
+    shapes - never source code, credentials or secrets), then hands off to the full
+    registration guide on the v2 host.
+  api: https://v2.gigacatalyst.com/api/self-serve/register
+  source: https://gigacatalyst.com/self-serve-agent.md
+  method: searched
+  verbatim: true
+  fetched: '2026-08-14'
+  http_status: 200
+  content_type: text/markdown; charset=utf-8
+  operations: []
+  hands_off_to: gigacatalyst-self-serve-registration.md
+install_prompt:
+  published_at: https://gigacatalyst.com/self
+  agents_named: [Claude Code, Cursor, OpenCode, Codex]
+  verbatim: >-
+    Install Gigacatalyst in this codebase. Read https://gigacatalyst.com/self-serve-agent.md
+    and follow the installation steps exactly. Do not change the existing product code.
+    Before creating an account or sending anything outside this repo (the account-creation
+    step in the linked instructions), tell me what you're about to send and to which URL, and
+    wait for me to confirm. Stop when the workspace is ready on v2.gigacatalyst.com and you
+    have my sign-in link, or sooner if something looks wrong.

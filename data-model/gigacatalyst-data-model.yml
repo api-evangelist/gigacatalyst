@@ -1,0 +1,95 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  https://v2.gigacatalyst.com/agent.md - derived from the request and response JSON objects
+  the provider publishes verbatim in Step 2 and Step 4 of its agent instructions
+note: >-
+  There is no OpenAPI and no components.schemas to walk, so this graph is derived from the
+  worked JSON examples and the field rules Gigacatalyst publishes. Field presence and types
+  are taken from those examples; anything the docs do not state is left null rather than
+  guessed. Cardinality is read from the JSON shape (array vs object).
+entities:
+- name: RegistrationRequest
+  role: request-root
+  fields:
+  - {name: email, type: string, required: true, note: the only value the agent asks the human for}
+  - {name: organization, type: object, required: true}
+  - {name: integrations, type: array, required: true}
+- name: Organization
+  fields:
+  - {name: name, type: string}
+  - {name: domain, type: string}
+- name: Integration
+  description: One per API. Grouping rule published as "one integration per API, one tool per endpoint."
+  fields:
+  - {name: provider, type: string, constraint: 'lowercase letters, numbers, hyphens, underscores'}
+  - {name: capability, type: string, example: rest}
+  - {name: name, type: string}
+  - {name: baseUrl, type: string, constraint: 'must be HTTPS; omit if not genuinely found'}
+  - {name: authentication, type: enum, values: [none, bearer, token, api_key_header, basic, login_session], default: bearer}
+  - {name: headerName, type: string, note: required when authentication is api_key_header}
+  - {name: credentialKey, type: string, example: token}
+  - {name: documents, type: array}
+  - {name: tools, type: array}
+- name: Document
+  description: Optional private domain notes. Not sent to a model unless the workspace enables it.
+  fields:
+  - {name: title, type: string}
+  - {name: kind, type: enum, values: [notes, api_reference, authentication, openapi]}
+  - {name: content, type: string}
+- name: Tool
+  description: One per endpoint. An MCP-shaped tool definition supplied by the caller.
+  fields:
+  - {name: name, type: string}
+  - {name: description, type: string, note: 'load-bearing - "that text is what the builder reasons over"'}
+  - {name: operation, type: string, constraint: 'resource.action, lowercase, unique within the integration'}
+  - {name: method, type: string, example: GET}
+  - {name: path, type: string, constraint: 'relative; no scheme, no host, no ..'}
+  - {name: safetyLevel, type: enum, values: [read, write, destructive]}
+  - {name: inputSchema, type: object, note: JSON Schema object with typed, described properties}
+  - {name: outputSchema, type: object, note: JSON Schema; array-of-object in the published example}
+- name: RegistrationResponse
+  role: response-root
+  fields:
+  - {name: ok, type: boolean}
+  - {name: isNewWorkspace, type: boolean}
+  - {name: tenantSlug, type: string}
+  - {name: toolCount, type: integer}
+  - {name: credentialKeys, type: array}
+  - {name: liveFromStart, type: boolean}
+  - {name: signInUrl, type: string, secret: true, note: single-use, expires shortly}
+  - {name: email, type: string}
+  - {name: password, type: string, secret: true, note: 'absent when the address already had an account - deliberate anti-takeover behaviour'}
+  - {name: setup, type: object}
+- name: Setup
+  fields:
+  - {name: integrationsUrl, type: string, note: the page credential fields are entered on}
+  - {name: connections, type: array}
+- name: Connection
+  description: Post-registration credential checklist, one per integration.
+  fields:
+  - {name: name, type: string}
+  - {name: provider, type: string}
+  - {name: authentication, type: string}
+  - {name: baseUrl, type: string}
+  - {name: credentials, type: array}
+  - {name: live, type: boolean, note: 'true when the API needs no credential and is switched on at signup'}
+- name: CredentialField
+  fields:
+  - {name: key, type: string}
+  - {name: label, type: string, note: 'basic and login_session ask for two fields, not one'}
+relationships:
+- {from: RegistrationRequest, to: Organization, type: has_one, via: organization}
+- {from: RegistrationRequest, to: Integration, type: has_many, via: integrations}
+- {from: Integration, to: Tool, type: has_many, via: tools}
+- {from: Integration, to: Document, type: has_many, via: documents}
+- {from: RegistrationResponse, to: Setup, type: has_one, via: setup}
+- {from: Setup, to: Connection, type: has_many, via: connections}
+- {from: Connection, to: CredentialField, type: has_many, via: credentials}
+- {from: Connection, to: Integration, type: belongs_to, via: provider}
+identifiers:
+- {entity: Integration, field: provider, form: slug, uniqueness: within the payload}
+- {entity: Tool, field: operation, form: resource.action, uniqueness: within the integration}
+- {entity: RegistrationResponse, field: tenantSlug, form: slug, note: derived from organization by the server}
+id_prefixes: []
+render: null

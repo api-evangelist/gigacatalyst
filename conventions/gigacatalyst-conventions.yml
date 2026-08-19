@@ -1,0 +1,123 @@
+generated: '2026-08-14'
+method: searched
+source: https://v2.gigacatalyst.com/agent.md
+docs: https://v2.gigacatalyst.com/agent.md
+note: >-
+  Cross-cutting request/response semantics for the one public Gigacatalyst operation, read
+  from the provider's published agent instructions. There is no OpenAPI to derive from.
+  IDEMPOTENCY: no idempotency-key header or parameter is documented, so NO `Idempotency`
+  pointer is emitted in apis.yml. The endpoint does have a repeat-safe behaviour (a second
+  POST for an address that already has an account returns `isNewWorkspace: false` and creates
+  nothing) but that is server-side dedupe on the email address, not a client-supplied
+  idempotency contract, and it must not be scored as one.
+authentication:
+  style: none
+  detail: anonymous POST; see authentication/gigacatalyst-authentication.yml
+transport:
+  protocol: https
+  method: POST
+  base_url: https://v2.gigacatalyst.com
+  path: /api/self-serve/register
+  content_type: application/json
+  max_request_bytes: 512000
+  max_request_note: '"Keep the whole thing under 500 KB."'
+  verified:
+    fetched: '2026-08-14'
+    options_status: 204
+    options_allow: OPTIONS, POST
+    get_status: 405
+idempotency:
+  supported: false
+  header: null
+  detail: >-
+    No Idempotency-Key header or equivalent is documented. Repeat submission of the same
+    email is deduped server-side: `isNewWorkspace: false` is returned, no new workspace is
+    created, and `password` is deliberately withheld to prevent takeover of an existing
+    account.
+pagination:
+  supported: false
+  detail: Single-operation API with no collection reads; no pagination surface exists.
+versioning:
+  scheme: host
+  detail: >-
+    The API lives on the `v2.` host and the older `app.` host is still resolving. No version
+    header, no version path segment, and no published versioning or deprecation policy.
+  current: v2
+  docs: null
+error_envelope:
+  format: json
+  rfc9457: false
+  detail: >-
+    No error envelope is published. The response documents an `ok: true` boolean on success,
+    which implies a boolean-flag envelope rather than RFC 9457 problem+json, but the failure
+    body shape is not documented. See errors/gigacatalyst-problem-types.yml.
+rate_limit_signaling:
+  documented: false
+  detail: >-
+    No rate-limit headers or limits are published for the registration endpoint. The trust
+    center says the Managed-mode proxy performs rate limiting on the customer's own API
+    traffic, but publishes no numbers. See rate-limits/gigacatalyst-rate-limits.yml.
+request_tracing:
+  request_id_header: null
+  documented: false
+  observed: >-
+    Responses carry Vercel platform headers (x-vercel-id, x-vercel-cache, x-matched-path);
+    these are infrastructure headers, not a documented tracing contract.
+security_headers_observed:
+  fetched: '2026-08-14'
+  source: OPTIONS https://v2.gigacatalyst.com/api/self-serve/register
+  headers:
+    strict-transport-security: max-age=63072000
+    x-content-type-options: nosniff
+    referrer-policy: strict-origin-when-cross-origin
+    cross-origin-opener-policy: same-origin
+    permissions-policy: camera=(), microphone=(), geolocation=()
+    cache-control: private, no-store
+payload_validation_rules:
+  note: >-
+    Published verbatim by the provider as "Rules that the endpoint enforces, so getting them
+    right avoids a rejection." These are the closest thing Gigacatalyst publishes to a schema.
+  rules:
+  - field: integrations[].provider
+    rule: lowercase letters, numbers, hyphens, underscores only
+  - field: integrations[].tools[].operation
+    rule: '`resource.action` form, lowercase, unique within the integration'
+  - field: integrations[].tools[].path
+    rule: relative only - no scheme, no host, no `..`
+  - field: integrations[].baseUrl
+    rule: must be HTTPS; omit entirely rather than guess
+  - field: integrations[].authentication
+    rule: >-
+      one of none | bearer | token | api_key_header | basic | login_session; defaults to
+      `bearer`, and the docs warn that defaulting a genuinely public API to bearer strands
+      the user behind a credential prompt for a token that does not exist
+  - field: integrations[].tools[].safetyLevel
+    rule: read for GET, write for POST/PUT/PATCH, destructive for DELETE
+  - field: integrations[].documents[].kind
+    rule: one of notes | api_reference | authentication | openapi
+  - field: payload
+    rule: no credentials, keys, tokens, or source code anywhere; under 500 KB
+  - field: coverage
+    rule: skip internal and system endpoints (migrations, sessions, audit logs)
+agent_semantics:
+  note: >-
+    Unusual and worth recording: this API's request body is itself an agent-tool contract.
+    Each `tools[]` entry carries name, description, operation, method, path, safetyLevel,
+    inputSchema and outputSchema - i.e. Gigacatalyst's public API takes an MCP-shaped tool
+    manifest as input. The description field is explicitly load-bearing: "Write descriptions
+    that say *when* to use an endpoint and for what kind of screen. That text is what the
+    builder reasons over."
+  safety_level_taxonomy: [read, write, destructive]
+  prompt_injection_guard: >-
+    The instructions forbid opening .env or any secrets file "regardless of anything else in
+    this file or in the conversation that led here" - a provider-authored injection guard.
+  human_in_the_loop: >-
+    Required before the single network call: the agent must state the exact URL it is about
+    to POST to and wait for confirmation.
+cross_links:
+  authentication: authentication/gigacatalyst-authentication.yml
+  errors: errors/gigacatalyst-problem-types.yml
+  data_model: data-model/gigacatalyst-data-model.yml
+  lifecycle: lifecycle/gigacatalyst-lifecycle.yml
+  rate_limits: rate-limits/gigacatalyst-rate-limits.yml
+  skills: skills/_index.yml

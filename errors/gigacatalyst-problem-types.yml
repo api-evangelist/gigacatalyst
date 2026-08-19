@@ -1,0 +1,68 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  Live probes of https://v2.gigacatalyst.com/api/self-serve/register plus the rejection rules
+  published at https://v2.gigacatalyst.com/agent.md
+format: unknown
+rfc9457: false
+note: >-
+  Gigacatalyst publishes NO error reference. There is no error-code table, no status-code
+  list, and no documented failure body for its one public operation. What follows is
+  therefore split into (a) statuses actually observed by probing and (b) rejection CAUSES the
+  provider documents in prose without ever naming the status code or body they produce. No
+  status code has been invented for a documented cause, and no cause has been invented for an
+  observed status - the gap between the two columns is the finding.
+observed:
+- status: 405
+  method: GET
+  path: /api/self-serve/register
+  body: empty
+  fetched: '2026-08-14'
+  note: Method not allowed. The route exists and answers, but only to POST.
+- status: 204
+  method: OPTIONS
+  path: /api/self-serve/register
+  headers: {allow: 'OPTIONS, POST'}
+  fetched: '2026-08-14'
+  note: >-
+    Preflight succeeds anonymously and advertises the allowed method set - the evidence that
+    this endpoint is real and unauthenticated.
+documented_rejection_causes:
+  note: >-
+    Published under "Rules that the endpoint enforces, so getting them right avoids a
+    rejection." The provider names the condition but never the status code or the response
+    body, so `status` is null throughout. Filling these in would require submitting a
+    deliberately malformed registration, which would create real accounts and is out of scope
+    for a read-only public probe.
+  causes:
+  - {cause: provider slug contains characters outside lowercase letters/numbers/hyphens/underscores, status: null}
+  - {cause: 'operation is not in resource.action form, or is not lowercase', status: null}
+  - {cause: operation is not unique within the integration, status: null}
+  - {cause: 'path is absolute, contains a scheme or host, or contains ..', status: null}
+  - {cause: baseUrl is not HTTPS, status: null}
+  - {cause: authentication is outside the enum none/bearer/token/api_key_header/basic/login_session, status: null}
+  - {cause: safetyLevel is outside read/write/destructive, status: null}
+  - {cause: 'documents[].kind is outside notes/api_reference/authentication/openapi', status: null}
+  - {cause: payload exceeds 500 KB, status: null}
+non_error_conditions:
+  note: >-
+    Two conditions a caller would naturally treat as errors are explicitly NOT errors. Both
+    are signalled in a 2xx body, so a client that branches on status alone will mishandle them.
+  conditions:
+  - condition: submitted email already has an account
+    signal: '`isNewWorkspace: false` in the success body'
+    consequence: >-
+      no new workspace is created and `password` is omitted from the response. The provider
+      states this is deliberate: "this endpoint is public, and handing back a password for an
+      existing address would let anyone who knows it take that account over."
+    is_error: false
+  - condition: registered API needs no credential
+    signal: '`liveFromStart: true`, or `live: true` on a setup.connections[] entry'
+    consequence: the connection is switched on at signup and reads real data immediately
+    is_error: false
+problems: []
+gaps:
+- No error reference page exists on any Gigacatalyst host.
+- No status codes are documented for any failure mode.
+- The failure response body shape is undocumented; only the success shape is published.
+- No RFC 9457 application/problem+json usage was found or claimed.

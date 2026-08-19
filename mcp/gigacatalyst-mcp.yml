@@ -1,0 +1,55 @@
+generated: '2026-08-14'
+method: derived
+status: candidate
+source: >-
+  https://v2.gigacatalyst.com/agent.md - derived from the single public operation Gigacatalyst
+  documents. Searched for a hosted server first (docs, sitemap, GitHub org, npm, MCP
+  registries) and probed /mcp and /api/mcp on app.gigacatalyst.com and v2.gigacatalyst.com.
+note: >-
+  NO MCP SERVER EXISTS and NO `MCPServer` pointer is emitted in apis.yml. This file is a
+  derived candidate only. The /mcp and /api/mcp probes returned HTTP 200 with
+  `content-type: text/html` - single-page-app catch-all shells that answer 200 for every
+  path, not MCP endpoints. Emitting an MCPServer pointer on the strength of those 200s is
+  exactly the false-credit failure this pipeline guards against.
+
+  The genuinely interesting finding is the inverse: Gigacatalyst has no MCP server but its
+  public API CONSUMES an MCP-shaped manifest. The registration payload's `tools[]` array
+  carries name, description, method, path, safetyLevel, inputSchema and outputSchema per
+  tool - the same shape an MCP `tools/list` response returns. The platform speaks the
+  vocabulary on the way in without exposing a server on the way out.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: probed
+server: null
+tools:
+- name: register_workspace
+  description: >-
+    Create a Gigacatalyst workspace from an email address and a JSON description of a
+    project's API surface. Returns a single-use sign-in URL, an account password, the number
+    of operations catalogued, and a per-connection credential checklist.
+  source_operation: 'POST https://v2.gigacatalyst.com/api/self-serve/register'
+  source_documentation: https://v2.gigacatalyst.com/agent.md
+  input_contract: data-model/gigacatalyst-data-model.yml#RegistrationRequest
+  output_contract: data-model/gigacatalyst-data-model.yml#RegistrationResponse
+  auth: none
+  safety_level: write
+  human_in_the_loop: >-
+    Required by the provider - the agent must state the exact URL it is about to POST to and
+    wait for the human to confirm before calling. Any real MCP wrapper of this operation must
+    preserve that gate.
+  secrets_handling: >-
+    The response contains two secrets (signInUrl, password). The provider requires them to be
+    printed once to the human and written nowhere else - not to a file, a commit message, a
+    .env, or the agent's own transcript.
+probes:
+- {url: 'https://app.gigacatalyst.com/mcp', status: 200, content_type: text/html, real_endpoint: false, reason: SPA catch-all shell}
+- {url: 'https://app.gigacatalyst.com/api/mcp', status: 200, content_type: text/html, real_endpoint: false, reason: SPA catch-all shell}
+- {url: 'https://v2.gigacatalyst.com/.well-known/oauth-protected-resource', status: 200, content_type: text/html, real_endpoint: false, reason: SPA catch-all shell}
+- {url: 'https://gigacatalyst.com/.well-known/ai-plugin.json', status: 404, real_endpoint: false}
+registries_searched:
+- {registry: npm, query: 'gigacatalyst', result: 'one package, the SDK - no MCP server package'}
+- {registry: 'github.com/gigacatalyst', result: 'two repos, neither an MCP server'}

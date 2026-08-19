@@ -1,0 +1,165 @@
+generated: '2026-08-14'
+method: probed
+source: live GET against every Gigacatalyst host on 2026-08-14
+result: no-hits
+note: >-
+  Every /.well-known/ path was probed on all three Gigacatalyst hosts and NOT ONE returned a
+  real document, so no WellKnown or SecurityTxt pointer is emitted in apis.yml. This file
+  records the absence, which is valid data - it is not evidence of a served surface.
+
+  Two distinct failure shapes were observed and must not be confused:
+
+  1. gigacatalyst.com (Next.js on Vercel) answers an honest HTTP 404 for every
+     /.well-known/ path. A genuine miss.
+  2. app.gigacatalyst.com and v2.gigacatalyst.com are single-page-app catch-alls that answer
+     HTTP 200 with `content-type: text/html` and an HTML document shell for EVERY path,
+     including paths that plainly do not exist. These 200s are SOFT 404s and are recorded
+     below as `real_document: false`. Treating them as hits is the dominant false positive on
+     this probe.
+hosts:
+- host: https://gigacatalyst.com
+  behavior: honest-404
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    real_document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    real_document: false
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    real_document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    real_document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    real_document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    real_document: false
+  - path: /.well-known/agent.json
+    status: 404
+    real_document: false
+  - path: /llms.txt
+    status: 404
+    real_document: false
+  - path: /openapi.json
+    status: 404
+    real_document: false
+  - path: /robots.txt
+    status: 200
+    real_document: true
+    content_type: text/plain
+    note: >-
+      "User-Agent: * / Allow: / / Sitemap: https://gigacatalyst.com/sitemap.xml" - fully
+      open to crawlers and agents, no disallow rules, no AI-specific user-agent blocks.
+  - path: /sitemap.xml
+    status: 200
+    real_document: true
+    content_type: application/xml
+    note: 108 URLs, mostly the blog; no docs or developer section.
+- host: https://v2.gigacatalyst.com
+  behavior: spa-catch-all
+  note: >-
+    Every path returns 200 text/html. All /.well-known/ 200s below are HTML shells, NOT
+    documents. The one genuine machine-addressable file on this host is /agent.md, which is
+    served as text/markdown and is the API's published reference.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell
+  - path: /.well-known/openid-configuration
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell
+  - path: /.well-known/api-catalog
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell
+  - path: /.well-known/agent-card.json
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell - NOT an agent card
+  - path: /.well-known/agent.json
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell - NOT an agent card
+  - path: /llms.txt
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell - no llms.txt is published
+  - path: /openapi.json
+    status: 200
+    real_document: false
+    content_type: text/html
+    reason: SPA catch-all HTML shell - no OpenAPI is published
+  - path: /agent.md
+    status: 200
+    real_document: true
+    content_type: text/markdown; charset=utf-8
+    note: >-
+      The real find. Provider-published agent operating instructions carrying the full
+      request/response contract for the self-serve registration endpoint. Saved verbatim to
+      skills/gigacatalyst-self-serve-registration.md.
+- host: https://app.gigacatalyst.com
+  behavior: spa-catch-all
+  note: >-
+    Identical shape to v2 - 200 text/html for every path probed, including /openapi.json,
+    /swagger.json, /api-docs, /docs, /graphql, /mcp, /api/mcp and all /.well-known/ paths.
+    No real document was returned by any of them.
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    real_document: false
+    content_type: text/html
+  - path: /.well-known/agent.json
+    status: 200
+    real_document: false
+    content_type: text/html
+  - path: /.well-known/security.txt
+    status: 200
+    real_document: false
+    content_type: text/html
+  - path: /.well-known/openid-configuration
+    status: 200
+    real_document: false
+    content_type: text/html
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    real_document: false
+    content_type: text/html
+  - path: /.well-known/api-catalog
+    status: 200
+    real_document: false
+    content_type: text/html
+hosts_not_resolving:
+- host: https://api.gigacatalyst.com
+  status: 000
+  note: DNS does not resolve / no TLS listener
+- host: https://docs.gigacatalyst.com
+  status: 000
+  note: DNS does not resolve / no TLS listener
+- host: https://developers.gigacatalyst.com
+  status: 000
+  note: DNS does not resolve / no TLS listener
+- host: https://status.gigacatalyst.com
+  status: 000
+  note: DNS does not resolve / no TLS listener
